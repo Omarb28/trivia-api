@@ -79,7 +79,7 @@ def create_app(test_config=None):
     if len(current_questions) == 0:
       return abort(404)
 
-    total_questions = Question.query.count()
+    total_questions = len(selection)
     current_category = Category.query.first().format()   # todo: change this
 
     categories = Category.query.all()
@@ -135,7 +135,22 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<int:category_id>/questions')
+  def retrieve_questions_by_category(category_id):
+    category = Category.query.get(category_id)
 
+    if category is None:
+      abort(404)
+
+    selection = category.questions
+    current_questions = paginate_questions(request, selection)
+    total_questions = len(selection)
+
+    return jsonify({
+      "questions": current_questions,
+      "total_questions": total_questions,
+      "current_category": category
+    })
 
   '''
   @TODO: 
