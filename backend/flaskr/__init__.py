@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from pprint import PrettyPrinter
 import random
 
 from models import setup_db, Question, Category
@@ -23,6 +24,8 @@ def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
+  
+  pprint = PrettyPrinter()
   
   '''
   @DONE: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
@@ -68,6 +71,31 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/questions')
+  def retrieve_questions():
+    selection = Question.query.order_by(Question.id).all()
+    current_questions = paginate_questions(request, selection)
+
+    if len(current_questions) == 0:
+      return abort(404)
+
+    total_questions = Question.query.count()
+    current_category = Category.query.first().format()   # todo: change this
+
+    categories = Category.query.all()
+    formatted_categories = [category.format() for category in categories]
+
+    output = {
+      'success': True,
+      'questions': current_questions,
+      'total_questions': total_questions,
+      'categories': formatted_categories,
+      'current_category': current_category
+    }
+
+    pprint.pprint(output)
+
+    return jsonify(output)
 
   '''
   @TODO: 
