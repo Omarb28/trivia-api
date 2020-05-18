@@ -96,13 +96,29 @@ def create_app(test_config=None):
     return jsonify(output)
 
   '''
-  @TODO: 
+  @DONE: 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<int:question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    question = Question.query.get(question_id)
 
+    if question is None:
+      abort(404)
+
+    try:
+      question.delete()
+
+      return jsonify({
+        "success": True,
+        "status_code": 200,
+        "deleted": question.id
+      })
+    except:
+      abort(400)
   '''
   @DONE: 
   Create an endpoint to POST a new question, 
@@ -147,7 +163,7 @@ def create_app(test_config=None):
   '''
 
   '''
-  @TODO: 
+  @DONE: 
   Create a GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
