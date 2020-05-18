@@ -60,7 +60,7 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
+  @DONE: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -93,8 +93,6 @@ def create_app(test_config=None):
       'current_category': current_category
     }
 
-    pprint.pprint(output)
-
     return jsonify(output)
 
   '''
@@ -106,7 +104,7 @@ def create_app(test_config=None):
   '''
 
   '''
-  @TODO: 
+  @DONE: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
@@ -119,6 +117,7 @@ def create_app(test_config=None):
   def create_question():
     body = request.get_json()
 
+    # todo: sanitize input and check if None
     question_title = body.get('question')
     answer = body.get('answer')
     difficulty = body.get('difficulty')
@@ -162,14 +161,14 @@ def create_app(test_config=None):
     if category is None:
       abort(404)
 
-    selection = category.questions
+    selection = Question.query.filter(Question.category == category.id).all()
     current_questions = paginate_questions(request, selection)
     total_questions = len(selection)
 
     return jsonify({
       "questions": current_questions,
       "total_questions": total_questions,
-      "current_category": category
+      "current_category": category.format()
     })
 
   '''
