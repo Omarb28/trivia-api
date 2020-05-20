@@ -73,7 +73,13 @@ def create_app(test_config=None):
   '''
   @app.route('/questions')
   def retrieve_questions():
-    selection = Question.query.order_by(Question.id).all()
+    search_term = request.args.get('search')
+
+    filtered = Question.query
+    if search_term is not None:
+      filtered = Question.query.filter(Question.question.ilike('%{}%'.format(search_term)))
+
+    selection = filtered.order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)
 
     if len(current_questions) == 0:
@@ -152,7 +158,7 @@ def create_app(test_config=None):
       abort(400)
 
   '''
-  @TODO: 
+  @DONE: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -161,6 +167,7 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  # Included in the retrieve_questions ('/questions') route above as a request paramater
 
   '''
   @DONE: 
