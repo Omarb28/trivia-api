@@ -78,6 +78,10 @@ def create_app(test_config=None):
     filtered = Question.query
     if search_term is not None:
       filtered = Question.query.filter(Question.question.ilike('%{}%'.format(search_term)))
+      print('filtered!')
+
+    page = request.args.get('page')
+    print('page:', page)
 
     selection = filtered.order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)

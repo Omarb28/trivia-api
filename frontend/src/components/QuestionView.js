@@ -14,6 +14,7 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: [],
       currentCategory: null,
+      searchTerm: null
     }
   }
 
@@ -41,7 +42,15 @@ class QuestionView extends Component {
   }
 
   selectPage(num) {
-    this.setState({page: num}, () => this.getQuestions());
+    this.setState({page: num}, () => {
+      console.log(`search: ${this.state.searchTerm}, page: ${this.state.page}`);
+      if (this.state.searchTerm) {
+        this.submitSearch(this.state.searchTerm);
+      }
+      else {
+        this.getQuestions();
+      }
+    });
   }
 
   createPagination(){
@@ -78,13 +87,14 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `/questions?search=${searchTerm}`,
+      url: `/questions?search=${searchTerm}&page=${this.state.page}`,
       type: "GET",
       success: (result) => {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
-          currentCategory: result.current_category })
+          currentCategory: result.current_category,
+          searchTerm: searchTerm })
         return;
       },
       error: (error) => {
