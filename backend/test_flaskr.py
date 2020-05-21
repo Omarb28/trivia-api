@@ -78,6 +78,20 @@ class TriviaTestCase(unittest.TestCase):
       self.assertEqual(data['success'], False)
       self.assertEqual(data['message'], 'Method Not Allowed')
 
+    def test_delete_question(self):
+      question_id = 2
+      res = self.client().delete('/questions/' + str(question_id))
+      data = json.loads(res.data.decode('utf-8'))
+
+      question = Question.query.get(question_id)
+
+      self.assertEqual(res.status_code, 200)
+      self.assertEqual(data['success'], True)
+      self.assertEqual(data['deleted'], question_id)
+      #self.assertTrue(data['total_books'])
+      #self.assertTrue(len(data['books']))
+      self.assertEqual(question, None)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
