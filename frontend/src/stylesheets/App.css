@@ -1,5 +1,5 @@
 .App-header {
-  background-color: #222;
+  background-color: lightsteelblue;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -10,7 +10,7 @@
 }
 
 .App-header > h1 {
-  color: dodgerblue;
+  color: darkblue;
 }
 
 .App-intro {
