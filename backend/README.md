@@ -129,7 +129,10 @@ POST '/questions'
 - Returns: the ID of the created question
 
 
-
+DELETE '/question/<question_id>
+- Deletes a question with the <question_id>
+- Request Arguments: None
+- Returns: the ID of the deleted question
 ```
 
 
