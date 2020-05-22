@@ -117,6 +117,18 @@ GET '/category/<category_id>/questions?page=<num>'
 []
 
 
+POST '/questions'
+- Posts a new question, expects a JSON body that contains the following:
+    {
+      'question_title': 'What is love?',
+      'answer': 'Baby don\'t hurt me',
+      'difficulty': 5,
+      'category': 1
+    }
+- Request Arguments: None
+- Returns: the ID of the created question
+
+
 
 ```
 
