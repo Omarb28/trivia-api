@@ -101,17 +101,22 @@ GET '/categories'
 
 
 GET '/questions?page=<num>&search=<term>'
-- Fetches a list of questions paginated by 10 questions by default
+- Fetches a list of questions paginated by 10 questions by default.
 - Request Arguments:
-        - page: return the requested page <num> of questions
-        - search: returns result for searching for questions with the <term>
+        - page: return the requested page <num> of questions.
+        - search: returns result for searching for questions with the <term>.
 - Returns: A list of questions.
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+[]
+
+
+GET '/category/<category_id>/questions?page=<num>'
+- Fetches a list of questions related to the <category_id> given, paginated by 10 questions in each page by default.
+- Request Argument:
+        - page: return the requested page <num> of questions.
+- Returns: A list of questions that belong to the category given.
+[]
+
+
 
 ```
 
