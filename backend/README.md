@@ -120,8 +120,8 @@ GET '/category/<category_id>/questions?page=<num>'
 POST '/questions'
 - Posts a new question, expects a JSON body that contains the following:
     {
-      'question_title': 'What is love?',
-      'answer': 'Baby don\'t hurt me',
+      'question_title': "What is love?",
+      'answer': "Baby don't hurt me",
       'difficulty': 5,
       'category': 1
     }
@@ -133,6 +133,25 @@ DELETE '/question/<question_id>
 - Deletes a question with the <question_id>
 - Request Arguments: None
 - Returns: the ID of the deleted question
+
+
+POST '/quizzes'
+- Route for playing the game, it expects the category chosen for the questions, and a list of previous questions, as follows:
+  {
+    'quiz_category': 1,
+    'previous_questions': [
+      {
+        'question_title': "What is love?",
+        'answer': "Baby don't hurt me",
+        'difficulty': 5,
+        'category': 1
+      },
+      {...}
+      ...etc
+    ]
+  }
+- Request Argument: None.
+- Returns: The next question in the category.
 ```
 
 
