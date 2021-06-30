@@ -1,5 +1,5 @@
 .App-header {
-  background-color: lightsteelblue;
+  background-color: rgb(144, 136, 255);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -36,4 +36,8 @@ form {
   flex-direction: column;
   width: 80%;
   margin: auto;
+}
+
+.clickable {
+  cursor: pointer;
 }

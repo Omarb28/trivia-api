@@ -1,0 +1,9 @@
+.App-header > h1:hover {
+    color: black;
+    cursor: pointer;
+  }
+  
+.App-header > h2:hover {
+color: black;
+cursor: pointer;
+}

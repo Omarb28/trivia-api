@@ -69,15 +69,15 @@ class FormView extends Component {
         <h2>Add a New Trivia Question</h2>
         <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
           <label>
-            Question
+            <span>Question</span>
             <input type="text" name="question" onChange={this.handleChange}/>
           </label>
           <label>
-            Answer
+            <span>Answer</span>
             <input type="text" name="answer" onChange={this.handleChange}/>
           </label>
           <label>
-            Difficulty
+            <span>Difficulty</span>
             <select name="difficulty" onChange={this.handleChange}>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -87,7 +87,7 @@ class FormView extends Component {
             </select>
           </label>
           <label>
-            Category
+            <span>Category</span>
             <select name="category" onChange={this.handleChange}>
               {this.state.categories.map(category => {
                   return (
@@ -96,7 +96,7 @@ class FormView extends Component {
                 })}
             </select>
           </label>
-          <input type="submit" className="button" value="Submit" />
+          <input type="submit" className="button clickable" value="Submit" />
         </form>
       </div>
     );

@@ -15,6 +15,7 @@
 .questions-list {
   flex-basis: 75%;
   text-align: center;
+  padding: 0 50px;
 }
 
 .Question-holder {
@@ -70,6 +71,14 @@ img.category {
   width: 30px;
 }
 
+.category:hover {
+  text-decoration: underline;
+}
+
 img.delete {
   width: 20px;
+}
+
+img.delete:hover {
+  border: 2px solid red;
 }
