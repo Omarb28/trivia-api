@@ -130,3 +130,6 @@ dmypy.json
 
 # npm packages
 node_modules/
+
+# code editor settings
+.vscode/
