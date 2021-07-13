@@ -60,7 +60,7 @@ class QuestionView extends Component {
       pageNumbers.push(
         <span
           key={i}
-          className={`page-num ${i === this.state.page ? 'active' : ''}`}
+          className={`page-num clickable ${i === this.state.page ? 'active' : ''}`}
           onClick={() => {this.selectPage(i)}}>{i}
         </span>)
     }
@@ -87,8 +87,15 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `/questions?search=${searchTerm}&page=${this.state.page}`,
-      type: "GET",
+      url: `/questions/search?page=${this.state.page}`, //DONE: update request URL
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({searchTerm: searchTerm}),
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true,
       success: (result) => {
         this.setState({
           questions: result.questions,

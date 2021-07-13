@@ -42,6 +42,7 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+
   '''
   @DONE: 
   Create an endpoint to handle GET requests 
@@ -60,6 +61,7 @@ def create_app(test_config=None):
       "categories": formatted_categories
     })
 
+
   '''
   @DONE: 
   Create an endpoint to handle GET requests for questions, 
@@ -74,17 +76,11 @@ def create_app(test_config=None):
   '''
   @app.route('/questions')
   def retrieve_questions():
-    search_term = request.args.get('search')
-
-    filtered = Question.query
-    if search_term is not None:
-      filtered = Question.query.filter(Question.question.ilike('%{}%'.format(search_term)))
-      print('filtered!')
-
+    
     page = request.args.get('page')
     print('page:', page)
 
-    selection = filtered.order_by(Question.id).all()
+    selection = Question.query.order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)
 
     if len(current_questions) == 0:
@@ -98,6 +94,7 @@ def create_app(test_config=None):
 
     output = {
       'success': True,
+      "status_code": 200,
       'questions': current_questions,
       'total_questions': total_questions,
       'categories': formatted_categories,
@@ -105,6 +102,7 @@ def create_app(test_config=None):
     }
 
     return jsonify(output)
+
 
   '''
   @DONE: 
@@ -130,6 +128,8 @@ def create_app(test_config=None):
       })
     except:
       abort(400)
+
+
   '''
   @DONE: 
   Create an endpoint to POST a new question, 
@@ -162,6 +162,7 @@ def create_app(test_config=None):
     except:
       abort(400)
 
+
   '''
   @DONE: 
   Create a POST endpoint to get questions based on a search term. 
@@ -172,7 +173,32 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
-  # Included in the retrieve_questions ('/questions') route above as a request paramater
+  @app.route('/questions/search', methods=['POST'])
+  def search_questions():
+    body = request.get_json()
+    search_term = body.get('searchTerm')
+
+    questions = Question.query
+
+    if search_term is not None:
+      questions = questions.filter(Question.question.ilike('%{}%'.format(search_term)))
+
+    selection = questions.order_by(Question.id).all()
+    current_questions = paginate_questions(request, selection)
+
+    total_questions = len(selection)
+    current_category = Category.query.first().format()   # todo: change this
+    
+    output = {
+      'success': True,
+      "status_code": 200,
+      'questions': current_questions,
+      'total_questions': total_questions,
+      'current_category': current_category
+    }
+
+    return jsonify(output)
+
 
   '''
   @DONE: 
@@ -198,6 +224,7 @@ def create_app(test_config=None):
       "total_questions": total_questions,
       "current_category": category.format()
     })
+
 
   '''
   @DONE: 
@@ -237,6 +264,8 @@ def create_app(test_config=None):
     return jsonify({
       "question": current_question.format()
     })
+
+
   '''
   @DONE: 
   Create error handlers for all expected errors 
@@ -262,7 +291,7 @@ def create_app(test_config=None):
   def not_allowed(error):
     return jsonify({
       'success': False,
-      'error': 404,
+      'error': 405,
       'message': 'Method Not Allowed'
     }), 405
 
@@ -284,5 +313,3 @@ def create_app(test_config=None):
 
   
   return app
-
-    
