@@ -48,7 +48,7 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  @app.route("/categories")
+  @app.route('/categories')
   def retrieve_categories():
     categories = Category.query.all()
 
@@ -58,7 +58,9 @@ def create_app(test_config=None):
     formatted_categories = [category.format() for category in categories]
 
     return jsonify({
-      "categories": formatted_categories
+      'success': True,
+      'status_code': 200,
+      'categories': formatted_categories
     })
 
 
@@ -76,25 +78,21 @@ def create_app(test_config=None):
   '''
   @app.route('/questions')
   def retrieve_questions():
-    
-    page = request.args.get('page')
-    print('page:', page)
-
     selection = Question.query.order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)
 
     if len(current_questions) == 0:
-      return abort(404)
+      abort(404)
 
     total_questions = len(selection)
-    current_category = Category.query.first().format()   # todo: change this
+    current_category = Category.query.first().format()
 
     categories = Category.query.all()
     formatted_categories = [category.format() for category in categories]
 
     output = {
       'success': True,
-      "status_code": 200,
+      'status_code': 200,
       'questions': current_questions,
       'total_questions': total_questions,
       'categories': formatted_categories,
@@ -122,9 +120,9 @@ def create_app(test_config=None):
       question.delete()
 
       return jsonify({
-        "success": True,
-        "status_code": 200,
-        "deleted": question.id
+        'success': True,
+        'status_code': 200,
+        'deleted': question.id
       })
     except:
       abort(400)
@@ -144,11 +142,13 @@ def create_app(test_config=None):
   def create_question():
     body = request.get_json()
 
-    # todo: sanitize input and check if None
-    question_title = body.get('question')
+    question_title = body.get('question_title')
     answer = body.get('answer')
     difficulty = body.get('difficulty')
     category = body.get('category')
+
+    if (question_title == '' or answer == ''):
+      abort(422)
 
     try:
       question = Question(question=question_title, answer=answer, difficulty=difficulty, category=category)
@@ -187,11 +187,11 @@ def create_app(test_config=None):
     current_questions = paginate_questions(request, selection)
 
     total_questions = len(selection)
-    current_category = Category.query.first().format()   # todo: change this
+    current_category = Category.query.first().format()
     
     output = {
       'success': True,
-      "status_code": 200,
+      'status_code': 200,
       'questions': current_questions,
       'total_questions': total_questions,
       'current_category': current_category
@@ -220,9 +220,11 @@ def create_app(test_config=None):
     total_questions = len(selection)
 
     return jsonify({
-      "questions": current_questions,
-      "total_questions": total_questions,
-      "current_category": category.format()
+      'success': True,
+      'status_code': 200,
+      'questions': current_questions,
+      'total_questions': total_questions,
+      'current_category': category.format()
     })
 
 
@@ -244,6 +246,12 @@ def create_app(test_config=None):
     quiz_category_id = body.get('quiz_category')['id']
     previous_questions = body.get('previous_questions')
 
+    if (Category.query.get(quiz_category_id) is None):
+      abort(404)
+    
+    if (type(previous_questions) is not list):
+      abort(400)
+
     # filter by category
     category_questions = Question.query
     if quiz_category_id != 0:
@@ -254,15 +262,16 @@ def create_app(test_config=None):
       category_questions = category_questions.filter(Question.id != prev_q)
 
     questions = category_questions.all()
+    current_question = None
 
-    if len(questions) == 0:
-      return jsonify({})
-
-    random_num = random.randrange(len(questions))
-    current_question = questions[random_num]
+    if len(questions) > 0:
+      random_num = random.randrange(len(questions))
+      current_question = questions[random_num].format()
 
     return jsonify({
-      "question": current_question.format()
+      'success': True,
+      'status_code': 200,
+      'question': current_question
     })
 
 
