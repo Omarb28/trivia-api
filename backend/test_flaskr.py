@@ -112,6 +112,14 @@ class TriviaTestCase(unittest.TestCase):
       self.assertEqual(data['deleted'], question_id)
       self.assertEqual(question, None)
 
+      # Make sure the question is deleted; can't delete same question twice
+      res2 = self.client().delete('/questions/' + str(question_id))
+      data2 = json.loads(res2.data.decode('utf-8'))
+      
+      self.assertEqual(res2.status_code, 404)
+      self.assertEqual(data2['success'], False)
+      self.assertEqual(data2['message'], 'Not Found')
+
     
     def test_404_question_to_delete_not_found(self):
       question_id = 10000
@@ -133,6 +141,18 @@ class TriviaTestCase(unittest.TestCase):
       self.assertEqual(res.status_code, 200)
       self.assertEqual(data['success'], True)
       self.assertTrue(data['created'])
+      # Making sure question is created by searching for it in the test below
+
+    
+    def test_search_for_questions(self):
+      res = self.client().post('/questions/search', json={'searchTerm': self.new_question['question'] })
+      data = json.loads(res.data.decode('utf-8'))
+
+      self.assertEqual(res.status_code, 200)
+      self.assertEqual(data['success'], True)
+      self.assertTrue(len(data['questions']))
+      self.assertTrue(data['total_questions'])
+      self.assertTrue(data['current_category'])
 
 
     def test_405_question_creation_not_allowed(self):
@@ -163,17 +183,6 @@ class TriviaTestCase(unittest.TestCase):
       self.assertEqual(res.status_code, 400)
       self.assertEqual(data['success'], False)
       self.assertEqual(data['message'], 'Bad Request')
-
-
-    def test_search_for_questions(self):
-      res = self.client().post('/questions/search', json={'searchTerm': self.new_question['question'] })
-      data = json.loads(res.data.decode('utf-8'))
-
-      self.assertEqual(res.status_code, 200)
-      self.assertEqual(data['success'], True)
-      self.assertTrue(len(data['questions']))
-      self.assertTrue(data['total_questions'])
-      self.assertTrue(data['current_category'])
 
 
     def test_get_questions_by_category(self):
