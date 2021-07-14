@@ -31,9 +31,19 @@ This will install all of the required packages we selected within the `requireme
 - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross origin requests from our frontend server. 
 
 ## Database Setup
-With Postgres running, restore a database using the trivia.psql file provided. From the backend folder in terminal run:
+
+With Postgres running, restore a database using the trivia.psql file provided. First create a database called trivia then from the backend folder in terminal run:
+
 ```bash
+createdb trivia
 psql trivia < trivia.psql
+```
+
+Please make sure to set the username and password for your database in your environmental variables as follows:
+
+```bash
+export DB_USER=YourUsernameHere
+export DB_PSWD=YourPasswordHere
 ```
 
 ## Running the server
@@ -68,95 +78,258 @@ One note before you delve into your tasks: for each endpoint you are expected to
 
 ## API Document
 
-REVIEW_COMMENT
+Following is the API document showing the available endpoints and their expected behavior:
+
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+GET '/categories/$id/questions'
+POST '/questions'
+POST '/questions/search'
+DELETE '/questions/$id'
+POST '/quizzes'
+
 
 GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+- Fetches a list of all categories available.
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-[
-  {
-    'id': 1,
-    'type': "Science"
-  },
-  {
-    'id': 2,
-    'type': "Art"
-  }
-]
+- Returns: An object with a single key, categories, that contains a a list of category objects that have id and type properties. 
+{
+  "categories": [
+    {
+      "id": 1,
+      "type": "Science"
+    },
+    {
+      "id": 2,
+      "type": "Art"
+    },
+    (etc...)
+}
 
 
-GET '/questions?page=<num>&search=<term>'
-- Fetches a list of questions paginated by 10 questions by default.
-- Request Arguments:
-        - page: return the requested page <num> of questions.
-        - search: returns result for searching for questions with the <term>.
-- Returns: A list of questions.
-[]
+GET '/questions?page=<num>'
+- Fetches a list of questions paginated by 10 questions for each page.
+- Request Arguments: Optional to include a page number in the request parameter.
+- Returns: An object with the following keys:
+    - categories: containing a list of all categories as objects with id and type properties.
+    - current_category: containing id and type proprties of the currently selected category.
+    - questions: a list of questions paginated by 10 questions depending on page number in arguments,
+                inwhich each question object has the properties:
+                  - id: id of the question.
+                  - question: question title.
+                  - answer: answer to the question.
+                  - difficulty: a numerical representation of the difficulty of the question, should be between 1 and 5.
+                  - category: the id of the cateogry the question belongs to.
+    - total_questions: number of total questions available.
+{
+    "categories": [
+        {
+            "id": 1,
+            "type": "Science"
+        },
+        (etc...)
+    ],
+    "current_category": {
+        "id": 1,
+        "type": "Science"
+    },
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        (etc...)
+    ],
+    "total_questions": 24
+}
 
 
 GET '/category/<category_id>/questions?page=<num>'
-- Fetches a list of questions related to the <category_id> given, paginated by 10 questions in each page by default.
+- Fetches a list of questions that belong to the <category_id> given, paginated by 10 questions in each page by default.
 - Request Argument:
-        - page: return the requested page <num> of questions.
-- Returns: A list of questions that belong to the category given.
-[]
+        - category_id: required in the endpoint url.
+        - page: optional to include a page number in the request parameter.
+- Returns: An object with the following keys:
+    - current_category: containing id and type proprties of the currently selected category.
+    - questions: a list of questions that belong to the category, paginated by 10 questions depending on page number in arguments.
+    - total_questions: number of total questions that belong to the category.
+{
+    "current_category": {
+        "id": 1,
+        "type": "Science"
+    },
+    "questions": [
+        {
+            "id": 20,
+            "question": "What is the heaviest organ in the human body?",
+            "answer": "The Liver",
+            "difficulty": 4,
+            "category": 1
+        },
+        (etc...)
+    ]
+    "total_questions": 8
+}
+
+
+POST '/questions/search?page=<num>'
+- Searches for the search term provided then returns the list of questions that match it, paginated by 10 questions for each page.
+- Request Arguments: JSON request message is required with a searchTerm key for what to search for, as shown below:
+    {
+        "searchTerm": "movie"
+    }
+    - Optional to include a page number in the request parameter.
+- Returns: An object with the following keys:
+    - current_category: containing id and type proprties of the currently selected category.
+    - questions: a list of questions matching the search term provided, paginated by 10 questions depending on page number in arguments.
+    - total_questions: number of total questions that match the search term.
+{
+    "current_category": {
+        "id": 1,
+        "type": "Science"
+    },
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        (etc...)
+    ],
+    "total_questions": 1
+}
 
 
 POST '/questions'
-- Posts a new question, expects a JSON body that contains the following:
+- Creates a new question based on the information provided in the request message.
+- Request Arguments: JSON request message is required with the following properties:
+    - question: question title.
+    - answer: answer to the question.
+    - difficulty: a numerical representation of the difficulty of the question, should be between 1 and 5.
+    - category: the id of the cateogry the question belongs to.
+    Example as follows:
     {
-      'question_title': "What is love?",
-      'answer': "Baby don't hurt me",
-      'difficulty': 5,
-      'category': 1
+        "question": "What is love?",
+        "answer": "Baby don't hurt me",
+        "difficulty": 5,
+        "category": 1
     }
-- Request Arguments: None
-- Returns: the ID of the created question
+- Returns: The id of the question that has been created.
+{
+    "created": 25
+}
 
 
-DELETE '/question/<question_id>
-- Deletes a question with the <question_id>
-- Request Arguments: None
-- Returns: the ID of the deleted question
+DELETE '/questions/<question_id>'
+- Deletes the question based on the <question_id> provided.
+- Request Arguments: Requires question id to be provided in the endpoint url.
+- Returns: The id  of the question that had been deleted.
+{
+    "deleted": 2
+}
 
 
 POST '/quizzes'
-- Route for playing the game, it expects the category chosen for the questions, and a list of previous questions, as follows:
-  {
-    'quiz_category': 1,
-    'previous_questions': [
-      {
-        'question_title': "What is love?",
-        'answer': "Baby don't hurt me",
-        'difficulty': 5,
-        'category': 1
-      },
-      {...}
-      ...etc
-    ]
-  }
-- Request Argument: None.
-- Returns: The next question in the category.
+- Route for playing the trivia quiz.
+- Request Argument: JSON request message is required with the following properties: 
+    - quiz category: the category object of the category that is being played in the quiz, the object containin the id and type for the category.
+    - previous questions: list of previous questions that have been played in the quiz for the category.
+    Example as follows:
+    {
+        'quiz_category': {
+            "id": 1,
+            "type": "Science"
+        }
+        "previous_questions": [
+          {
+            "question": "What is love?",
+            "answer": "Baby don't hurt me",
+            "difficulty": 5,
+            "category": 1
+          },
+          (etc...)
+        ]
+    }
+- Returns: The next question in the category as an object containing the properties id, question, answer, difficulty, and category.
+{
+    "id": 20,
+    "question": "What is the heaviest organ in the human body?",
+    "answer": "The Liver",
+    "difficulty": 4,
+    "category": 1
+}
+
+
+
+
+Errors Handled by the API:
+
+
+Error 400 - Bad Request
+For when a request is sent with invalid request arguments.
+Returns JSON object with the following properties:
+{
+  'success': False,
+  'error': 400,
+  'message': 'Bad Request'
+}
+
+
+Error 404 - Not Found
+For when a resource requested is not found by the API.
+Returns JSON object with the following properties:
+{
+  'success': False,
+  'error': 404,
+  'message': 'Not Found'
+}
+
+
+Error 405 - Method Not Allowed
+For when a method used on an endpoint is not available in the API.
+Returns JSON object with the following properties:
+{
+  'success': False,
+  'error': 405,
+  'message': 'Method Not Allowed'
+}
+
+
+Error 422 - Unprocessable Entity
+For when a request is posted but with some missing data.
+Returns JSON object with the following properties:
+{
+  'success': False,
+  'error': 422,
+  'message': 'Unprocessable Entity'
+}
+
+
+Error 500 - Internal Server Error
+For when the API encounters a server error.
+Returns JSON object with the following properties:
+{
+  'success': False,
+  'error': 500,
+  'message': 'Internal Server Error'
+}
+
+
 ```
 
 
 ## Testing
-To run the tests, run
+
+To run the tests, run:
+
 ```
 dropdb trivia_test
 createdb trivia_test
