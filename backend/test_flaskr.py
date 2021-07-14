@@ -21,21 +21,21 @@ class TriviaTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
 
         self.new_question = {
-            'question_title': 'What is love?',
+            'question': 'What is love?',
             'answer': "Baby don't hurt me",
             'difficulty': 5,
             'category': 1
         }
 
         self.new_question_empty_answer = {
-            'question_title': 'What is the meaning of life?',
+            'question': 'What is the meaning of life?',
             'answer': '',
             'difficulty': 5,
             'category': 2
         }
 
         self.new_question_string_in_integer_values = {
-            'question_title': 'Which animals are the best pets?',
+            'question': 'Which animals are the best pets?',
             'answer': 'Hamsters',
             'difficulty': 'Cats',
             'category': 'Dogs'
@@ -166,7 +166,7 @@ class TriviaTestCase(unittest.TestCase):
 
 
     def test_search_for_questions(self):
-      res = self.client().post('/questions/search', json={'searchTerm': self.new_question['question_title'] })
+      res = self.client().post('/questions/search', json={'searchTerm': self.new_question['question'] })
       data = json.loads(res.data.decode('utf-8'))
 
       self.assertEqual(res.status_code, 200)

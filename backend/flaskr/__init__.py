@@ -2,7 +2,6 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from pprint import PrettyPrinter
 import random
 
 from models import setup_db, Question, Category
@@ -24,10 +23,7 @@ def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  
-  pp = PrettyPrinter()
-  pprint = pp.pprint
-  
+
   '''
   @DONE: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
@@ -142,16 +138,24 @@ def create_app(test_config=None):
   def create_question():
     body = request.get_json()
 
-    question_title = body.get('question_title')
+    question = body.get('question')
     answer = body.get('answer')
     difficulty = body.get('difficulty')
     category = body.get('category')
 
-    if (question_title == '' or answer == ''):
+    if (question == '' or answer == ''):
       abort(422)
 
+    if (
+        type(question) is None
+        or type(answer) is None
+        or type(difficulty) is None
+        or type(category) is None
+      ):
+      abort(400)
+
     try:
-      question = Question(question=question_title, answer=answer, difficulty=difficulty, category=category)
+      question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
       question.insert()
 
       return jsonify({
